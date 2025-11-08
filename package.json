@@ -1,0 +1,81 @@
+{
+  "name": "color-branch-changes",
+  "displayName": "Color Branch Changes",
+  "publisher": "KyleRamirez",
+  "version": "0.0.0",
+  "license": "CC0-1.0",
+  "engines": {
+    "vscode": "^1.99.3"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Color Branch Changes",
+      "properties": {
+        "colorBranchChanges.baseBranch": {
+          "type": "string",
+          "default": "",
+          "description": "Base / parent branch to compare against. Leave empty to auto-detect the upstream branch."
+        },
+        "colorBranchChanges.includeUntracked": {
+          "type": "boolean",
+          "default": true,
+          "description": "Highlight untracked files too."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "colorBranchChanges.refresh",
+        "title": "Color Branch Changes: Refresh"
+      }
+    ],
+    "colors": [
+      {
+        "id": "colorBranchChanges.modifiedResourceForeground",
+        "description": "Current branch modified file",
+        "defaults": {
+          "light": "gitDecoration.modifiedResourceForeground",
+          "dark": "gitDecoration.modifiedResourceForeground",
+          "highContrast": "gitDecoration.modifiedResourceForeground"
+        }
+      },
+      {
+        "id": "colorBranchChanges.addedResourceForeground",
+        "description": "Current branch added file",
+        "defaults": {
+          "light": "gitDecoration.untrackedResourceForeground",
+          "dark": "gitDecoration.untrackedResourceForeground",
+          "highContrast": "gitDecoration.untrackedResourceForeground"
+        }
+      },
+      {
+        "id": "colorBranchChanges.unknownForeground",
+        "description": "Unknown file state",
+        "defaults": {
+          "light": "gitDecoration.conflictingResourceForeground",
+          "dark": "gitDecoration.conflictingResourceForeground",
+          "highContrast": "gitDecoration.conflictingResourceForeground"
+        }
+      }
+    ]
+  },
+  "extensionDependencies": [
+    "vscode.git"
+  ],
+  "scripts": {
+    "vscode:prepublish": "pnpm compile",
+    "compile": "tsc -p .",
+    "start": "pnpm compile -w",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "@types/vscode": "^1.98.0",
+    "@vscode/vsce": "^3.7.0",
+    "typescript": "^5.9.3"
+  }
+}
