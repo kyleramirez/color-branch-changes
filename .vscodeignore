@@ -1,7 +1,4 @@
-*
+**/*
 !out
-!out/extension.js
-!.vscode
-!.vscode/launch.json
 !package.json
-!.vscodeignore
+!README.md

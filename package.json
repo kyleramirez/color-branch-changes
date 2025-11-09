@@ -6,7 +6,7 @@
   "version": "0.0.0",
   "license": "CC0-1.0",
   "engines": {
-    "vscode": "^1.99.3"
+    "vscode": "^1.98.0"
   },
   "activationEvents": [
     "onStartupFinished"
@@ -16,7 +16,7 @@
     "configuration": {
       "title": "Color Branch Changes",
       "properties": {
-        "colorBranchChanges.baseBranch": {
+        "colorBranchChanges.mergeBase": {
           "type": "string",
           "default": "",
           "description": "Base / parent branch to compare against. Leave empty to auto-detect the upstream branch."
@@ -70,7 +70,9 @@
   "scripts": {
     "vscode:prepublish": "pnpm compile",
     "compile": "tsc -p .",
-    "start": "pnpm compile -w",
+    "watch": "pnpm compile -w",
+    "host:code": "node --trace-warnings ./scripts/host.js code",
+    "host:cursor": "node --trace-warnings ./scripts/host.js cursor",
     "package": "vsce package"
   },
   "devDependencies": {

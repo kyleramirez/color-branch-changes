@@ -6,32 +6,29 @@
 
     pnpm compile
 
-# VSCode / Cursor install
-
-# temporary local
+# editor install
+## temporary local-only install
 Use this to make changes to the extension and have it load in the editor after ">Developer: Reload Window"
 
-    pnpm start
+    pnpm watch
 
-Then launch the editor of your choice
+Launch an editor.
 
-    code --extensionDevelopmentPath="$PWD" ./Directory/To/Project
+    pnpm host:code ./Directory/To/Project
+    pnpm host:cursor ./Directory/To/Project
 
-# persistent local
-First authenticate vsce with a:
-  - personal access token from an Azure DevOps account
-  - publisher ID from marketplace.visualstudio.com
+## persisted local-only install
+First authenticate vsce with:
+  - a personal access token from an Azure DevOps account
+  - a publisher ID from marketplace.visualstudio.com
 
-    npx vsce login KyleRamirez
+    npx vsce login <publisher-id>
 
-Build package color-branch-changes-#.#.#.vsix
+Build package package-name-#.#.#.vsix
 
     pnpm package
+    code --install-extension package-name-#.#.#.vsix
 
-Then install it
+# publish to marketplace
 
-    code --install-extension color-branch-changes-#.#.#.vsix --force
-
-# publish it
-
-    npx vsce publish major|minor|patch
+    npx vsce publish <major|minor|patch>

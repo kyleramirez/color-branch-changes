@@ -15,12 +15,12 @@ git diff --name-status base-branch...HEAD
 Files with committed changes on the current branch are decorated using markers such as `A^` and `M^` to distinguish them from normal working-tree decorations. This helps monitor branch drift and gives immediate feedback on the size of an upcoming merge or pull request.
 
 ## Configuration
-### `colorBranchChanges.baseBranch` (string)
+### `colorBranchChanges.mergeBase` (string)
 Specifies the base (parent) branch to compare against.
 Leave blank to auto-detect the upstream tracking branch.
 ```json
 {
-  "colorBranchChanges.baseBranch": "another-branch"
+  "colorBranchChanges.mergeBase": "another-branch"
 }
 ```
 
@@ -51,3 +51,16 @@ To override this extension's colors specifically, use:
 
 ## Note
 - If no upstream branch is set and no base branch is configured, the extension falls back to `main`.
+
+
+- Start with git correctly
+- Fix identification of merge base
+- Take out refresh command
+- Add a picker with status of currently automatically selected base branch
+- Put in a command to change the base branch (launch picker)
+- add icons
+- change name to merge base explorer
+- automatic github deployment
+- toggle on off
+
+- write a linter that checks a function written within a function can be moved to an outer scope
