@@ -1,4 +1,6 @@
-# Color Branch Changes: A merge-base–aware diff
+# Show Merge Base: A merge-base–aware diff
+[![License: CC0-1.0](https://img.shields.io/badge/license-CC0--1.0-lightgrey.svg)](LICENSE)
+
 The built-in Git extension decorates files in the VS Code Explorer using icons and colors that reflect the **working directory** state—such as added (`A`), modified (`M`), deleted (`D`), and untracked files. These decorations only show how the working tree differs from **HEAD**.
 
 This extension extends that idea by adding decorations to show how the **current branch** differs from its **parent (or configured) base branch**.
@@ -15,20 +17,20 @@ git diff --name-status base-branch...HEAD
 Files with committed changes on the current branch are decorated using markers such as `A^` and `M^` to distinguish them from normal working-tree decorations. This helps monitor branch drift and gives immediate feedback on the size of an upcoming merge or pull request.
 
 ## Configuration
-### `colorBranchChanges.mergeBase` (string)
+### `showMergeBase.mergeBase` (string)
 Specifies the base (parent) branch to compare against.
 Leave blank to auto-detect the upstream tracking branch.
 ```json
 {
-  "colorBranchChanges.mergeBase": "another-branch"
+  "showMergeBase.mergeBase": "another-branch"
 }
 ```
 
-### `colorBranchChanges.includeUntracked` (boolean)
+### `showMergeBase.includeUntracked` (boolean)
 If `true`, untracked files that exist only on the current branch are also highlighted. Defaults to `true`.
 ```json
 {
-  "colorBranchChanges.includeUntracked": true
+  "showMergeBase.includeUntracked": true
 }
 ```
 
@@ -45,9 +47,9 @@ All colors are exposed as theme keys so you can override them in `settings.json`
 }
 ```
 To override this extension's colors specifically, use:
-- `"colorBranchChanges.modifiedResourceForeground"`
-- `"colorBranchChanges.addedResourceForeground"`
-- `"colorBranchChanges.unknownForeground"`
+- `"showMergeBase.modifiedResourceForeground"`
+- `"showMergeBase.addedResourceForeground"`
+- `"showMergeBase.unknownForeground"`
 
 ## Note
 - If no upstream branch is set and no base branch is configured, the extension falls back to `main`.

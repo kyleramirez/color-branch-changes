@@ -1,10 +1,9 @@
 {
-  "name": "color-branch-changes",
-  "displayName": "Color Branch Changes",
+  "name": "show-merge-base",
+  "displayName": "VS Code Show Merge Base",
   "publisher": "KyleRamirez",
-  "repository": "https://github.com/kyleramirez/color-branch-changes",
+  "repository": "https://github.com/kyleramirez/vscode-show-merge-base",
   "version": "0.0.0",
-  "license": "CC0-1.0",
   "engines": {
     "vscode": "^1.98.0"
   },
@@ -14,14 +13,14 @@
   "main": "./out/extension.js",
   "contributes": {
     "configuration": {
-      "title": "Color Branch Changes",
+      "title": "Show Merge Base",
       "properties": {
-        "colorBranchChanges.mergeBase": {
+        "showMergeBase.mergeBase": {
           "type": "string",
           "default": "",
           "description": "Base / parent branch to compare against. Leave empty to auto-detect the upstream branch."
         },
-        "colorBranchChanges.includeUntracked": {
+        "showMergeBase.includeUntracked": {
           "type": "boolean",
           "default": true,
           "description": "Highlight untracked files too."
@@ -30,13 +29,13 @@
     },
     "commands": [
       {
-        "command": "colorBranchChanges.refresh",
-        "title": "Color Branch Changes: Refresh"
+        "command": "showMergeBase.refresh",
+        "title": "Show Merge Base: Refresh"
       }
     ],
     "colors": [
       {
-        "id": "colorBranchChanges.modifiedResourceForeground",
+        "id": "showMergeBase.modifiedResourceForeground",
         "description": "Current branch modified file",
         "defaults": {
           "light": "gitDecoration.modifiedResourceForeground",
@@ -45,7 +44,7 @@
         }
       },
       {
-        "id": "colorBranchChanges.addedResourceForeground",
+        "id": "showMergeBase.addedResourceForeground",
         "description": "Current branch added file",
         "defaults": {
           "light": "gitDecoration.untrackedResourceForeground",
@@ -54,7 +53,7 @@
         }
       },
       {
-        "id": "colorBranchChanges.unknownForeground",
+        "id": "showMergeBase.unknownForeground",
         "description": "Unknown file state",
         "defaults": {
           "light": "gitDecoration.conflictingResourceForeground",

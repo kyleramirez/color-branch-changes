@@ -6,7 +6,6 @@ import {
   workspace as VSCodeWorkspace,
   EventEmitter,
   FileDecorationProvider,
-  commands as VSCodeCommands,
   FileType,
   FileDecoration,
   ThemeColor,
@@ -82,14 +81,14 @@ export async function activate(extensionContext: ExtensionContext) {
           // TODO: handle repository.ui.onDidChange
           // TODO: handle config changes
           // extensionContext.subscriptions.push(VSCodeWorkspace.onDidChangeConfiguration(async (event) => {
-          //   if (event.affectsConfiguration('colorBranchChanges')) {
+          //   if (event.affectsConfiguration('showMergeBase')) {
           //     await decorate(repository);
           //     onDidChange.fire(VSCodeWorkspace.workspaceFolders?.map((workspaceFolder) => workspaceFolder.uri) ?? [])
           //   }
           // }));
           // TODO: Register commands
           // extensionContext.subscriptions.push(
-          //   VSCodeCommands.registerCommand('colorBranchChanges.refresh', async () => {
+          //   VSCodeCommands.registerCommand('showMergeBase.refresh', async () => {
           //     decorate(repository);
           //     onDidChange.fire(VSCodeWorkspace.workspaceFolders?.map((f) => f.uri) ?? []);
           //   })
@@ -124,7 +123,7 @@ export async function activate(extensionContext: ExtensionContext) {
   }
   // TODO: Debounce by repository
   async function decorate(repository: Repository) {
-    const config = VSCodeWorkspace.getConfiguration('colorBranchChanges');
+    const config = VSCodeWorkspace.getConfiguration('showMergeBase');
     const mergeBaseConfig = config.get<string>('mergeBase', '');
     const includeUntracked = config.get<boolean>('includeUntracked', true);
 
@@ -191,13 +190,13 @@ function decorationForKind(state: FileState): FileDecoration {
       return new FileDecoration(
         'M^',
         'Modified on current branch',
-        new ThemeColor('colorBranchChanges.modifiedResourceForeground')
+        new ThemeColor('showMergeBase.modifiedResourceForeground')
       );
     case 'branch-added':
       return new FileDecoration(
         'A^',
         'Added on current branch',
-        new ThemeColor('colorBranchChanges.addedResourceForeground')
+        new ThemeColor('showMergeBase.addedResourceForeground')
       );
   }
 }
