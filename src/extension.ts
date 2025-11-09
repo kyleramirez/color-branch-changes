@@ -208,6 +208,7 @@ async function getChangedFiles(
   _includeUntracked: boolean
 ): Promise<Map<string, FileState>> {
   // TODO: get away from native git commands and use the methods in https://github.com/microsoft/vscode/blob/main/extensions/git/src/api/api1.ts
+  // TODO: Also test for accuracy here .. some seem off
   const repoPath = root.fsPath;
   const branchChanges = new Map<string, 'A' | 'M' | 'D' | 'R'>();
   const diffOutput = await runGit(['diff', '--name-status', `${mergeBase}..HEAD`], repoPath);
