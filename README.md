@@ -51,16 +51,3 @@ To override this extension's colors specifically, use:
 
 ## Note
 - If no upstream branch is set and no base branch is configured, the extension falls back to `main`.
-
-
-- Start with git correctly
-- Fix identification of merge base
-- Take out refresh command
-- Add a picker with status of currently automatically selected base branch
-- Put in a command to change the base branch (launch picker)
-- add icons
-- change name to merge base explorer
-- automatic github deployment
-- toggle on off
-
-- write a linter that checks a function written within a function can be moved to an outer scope
