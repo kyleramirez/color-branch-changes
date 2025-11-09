@@ -17,8 +17,8 @@ import { promisify } from 'util';
 import type { GitExtension, API, Repository } from './git.d';
 import log from './utils/logger';
 
-type FileState = 'branch-added' | 'branch-modified';
-type DirectoryState = 'branch-added' | 'branch-modified';
+type FileState = 'branch-added' | 'branch-changed';
+type DirectoryState = 'branch-added' | 'branch-changed';
 interface RepoInfo {
   root: Uri;
   changedFiles: Map<string, FileState>;
@@ -186,11 +186,11 @@ async function isDirUri(uri: Uri): Promise<boolean> {
 
 function decorationForKind(state: FileState): FileDecoration {
   switch (state) {
-    case 'branch-modified':
+    case 'branch-changed':
       return new FileDecoration(
         'M^',
-        'Modified on current branch',
-        new ThemeColor('showMergeBase.modifiedResourceForeground')
+        'Changed on current branch',
+        new ThemeColor('showMergeBase.changedResourceForeground')
       );
     case 'branch-added':
       return new FileDecoration(
@@ -256,7 +256,7 @@ async function getChangedFiles(
     if (branchStatus === 'A') {
       result.set(filePath, 'branch-added');
     } else if (branchStatus === 'M' || branchStatus === 'R') {
-      result.set(filePath, 'branch-modified');
+      result.set(filePath, 'branch-changed');
     }
   }
 

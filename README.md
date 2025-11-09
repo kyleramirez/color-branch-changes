@@ -1,13 +1,13 @@
 # Show Merge Base: A merge-base–aware diff
 [![License: CC0-1.0](https://img.shields.io/badge/license-CC0--1.0-lightgrey.svg)](LICENSE)
 
-The built-in Git extension decorates files in the VS Code Explorer using icons and colors that reflect the **working directory** state—such as added (`A`), modified (`M`), deleted (`D`), and untracked files. These decorations only show how the working tree differs from **HEAD**.
+The built-in Git extension decorates files in the VS Code Explorer using icons and colors that reflect the **working directory** state—such as added (`A`), changed (`M`), deleted (`D`), and untracked files. These decorations only show how the working tree differs from **HEAD**.
 
 This extension extends that idea by adding decorations to show how the **current branch** differs from its **parent (or configured) base branch**.
 
 This enables you to see, directly in the Explorer:
 * which files your branch has **added**
-* which files your branch has **modified**
+* which files your branch has **changed**
 * and the size or scope of the work your branch introduces.
 
 Equivalent to:
@@ -40,14 +40,14 @@ All colors are exposed as theme keys so you can override them in `settings.json`
 {
   "workbench.colorCustomizations": {
     "gitDecoration.untrackedResourceForeground": "#a3f5b5aa",
-    "gitDecoration.modifiedResourceForeground": "#a3f5f2aa",
+    "gitDecoration.changedResourceForeground": "#a3f5f2aa",
     "gitDecoration.addedResourceForeground": "#a3f5b5",
-    "gitDecoration.stageModifiedResourceForeground": "#a3f5f2"
+    "gitDecoration.stageChangedResourceForeground": "#a3f5f2"
   }
 }
 ```
 To override this extension's colors specifically, use:
-- `"showMergeBase.modifiedResourceForeground"`
+- `"showMergeBase.changedResourceForeground"`
 - `"showMergeBase.addedResourceForeground"`
 - `"showMergeBase.unknownForeground"`
 

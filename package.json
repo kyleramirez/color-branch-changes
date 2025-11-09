@@ -15,37 +15,36 @@
     "configuration": {
       "title": "Show Merge Base",
       "properties": {
-        "showMergeBase.mergeBase": {
+        "showMergeBase.baseBranch": {
           "type": "string",
           "default": "",
-          "description": "Base / parent branch to compare against. Leave empty to auto-detect the upstream branch."
-        },
-        "showMergeBase.includeUntracked": {
-          "type": "boolean",
-          "default": true,
-          "description": "Highlight untracked files too."
+          "markdownDescription": "Optionally set the base or parent branch for comparison (defaults to parent branch)"
         }
       }
     },
     "commands": [
       {
-        "command": "showMergeBase.refresh",
-        "title": "Show Merge Base: Refresh"
+        "command": "showMergeBase.changeBaseBranch",
+        "title": "Show Merge Base: change base branch ..."
+      },
+      {
+        "command": "showMergeBase.showOppositeMergeDirection",
+        "title": "Show Merge Base: show opposite merge direction ..."
       }
     ],
     "colors": [
       {
-        "id": "showMergeBase.modifiedResourceForeground",
-        "description": "Current branch modified file",
+        "id": "showMergeBase.changedResourceForeground",
+        "description": "changed",
         "defaults": {
-          "light": "gitDecoration.modifiedResourceForeground",
-          "dark": "gitDecoration.modifiedResourceForeground",
-          "highContrast": "gitDecoration.modifiedResourceForeground"
+          "light": "gitDecoration.changedResourceForeground",
+          "dark": "gitDecoration.changedResourceForeground",
+          "highContrast": "gitDecoration.changedResourceForeground"
         }
       },
       {
         "id": "showMergeBase.addedResourceForeground",
-        "description": "Current branch added file",
+        "description": "added",
         "defaults": {
           "light": "gitDecoration.untrackedResourceForeground",
           "dark": "gitDecoration.untrackedResourceForeground",
@@ -53,12 +52,12 @@
         }
       },
       {
-        "id": "showMergeBase.unknownForeground",
-        "description": "Unknown file state",
+        "id": "showMergeBase.deletedResourceForeground",
+        "description": "deleted",
         "defaults": {
-          "light": "gitDecoration.conflictingResourceForeground",
-          "dark": "gitDecoration.conflictingResourceForeground",
-          "highContrast": "gitDecoration.conflictingResourceForeground"
+          "light": "gitDecoration.deletedResourceForeground",
+          "dark": "gitDecoration.deletedResourceForeground",
+          "highContrast": "gitDecoration.deletedResourceForeground"
         }
       }
     ]
