@@ -8,7 +8,7 @@ function generateLogger() {
     if (outputChannel && typeof extensionContextOrMessage === 'string') {
       outputChannel.appendLine(extensionContextOrMessage);
     } else if (typeof extensionContextOrMessage !== 'string') {
-      outputChannel = VSCodeWindow.createOutputChannel('Show Merge Base');
+      outputChannel = VSCodeWindow.createOutputChannel('Merge Base');
       extensionContextOrMessage.subscriptions.push(outputChannel);
     }
   }

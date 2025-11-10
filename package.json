@@ -1,8 +1,8 @@
 {
-  "name": "show-merge-base",
-  "displayName": "VS Code Show Merge Base",
+  "name": "merge-base",
+  "displayName": "VS Code Merge Base",
   "publisher": "KyleRamirez",
-  "repository": "https://github.com/kyleramirez/vscode-show-merge-base",
+  "repository": "https://github.com/kyleramirez/vscode-merge-base",
   "version": "0.0.0",
   "engines": {
     "vscode": "^1.98.0"
@@ -13,28 +13,62 @@
   "main": "./out/extension.js",
   "contributes": {
     "configuration": {
-      "title": "Show Merge Base",
+      "title": "Merge Base",
       "properties": {
-        "showMergeBase.baseBranch": {
+        "mergeBase.baseBranch": {
           "type": "string",
           "default": "",
           "markdownDescription": "Optionally set the base or parent branch for comparison (defaults to parent branch)"
         }
       }
     },
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "mergeBase.changeBaseBranch",
+          "group": "navigation"
+        },
+        {
+          "command": "mergeBase.showOppositeMergeDirection",
+          "group": "navigation"
+        }
+      ],
+      "scm/title": [
+        {
+          "command": "mergeBase.changeBaseBranch",
+          "when": "scmProvider == git"
+        },
+        {
+          "command": "mergeBase.showOppositeMergeDirection",
+          "when": "scmProvider == git"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "mergeBase.changeBaseBranch"
+        },
+        {
+          "command": "mergeBase.showOppositeMergeDirection"
+        }
+      ]
+    },
     "commands": [
       {
-        "command": "showMergeBase.changeBaseBranch",
-        "title": "Show Merge Base: change base branch ..."
+        "command": "mergeBase.changeBaseBranch",
+        "title": "Merge Base: choose base branch"
       },
       {
-        "command": "showMergeBase.showOppositeMergeDirection",
-        "title": "Show Merge Base: show opposite merge direction ..."
+        "command": "mergeBase.showOppositeMergeDirection",
+        "title": "Merge Base: switch merge direction"
+      },
+      {
+        "command": "mergeBase.toggle",
+        "title": "Merge Base: toggle show"
       }
     ],
     "colors": [
       {
-        "id": "showMergeBase.changedResourceForeground",
+        "id": "mergeBase.changedResourceForeground",
         "description": "changed",
         "defaults": {
           "light": "gitDecoration.changedResourceForeground",
@@ -43,7 +77,7 @@
         }
       },
       {
-        "id": "showMergeBase.addedResourceForeground",
+        "id": "mergeBase.addedResourceForeground",
         "description": "added",
         "defaults": {
           "light": "gitDecoration.untrackedResourceForeground",
@@ -52,7 +86,7 @@
         }
       },
       {
-        "id": "showMergeBase.deletedResourceForeground",
+        "id": "mergeBase.deletedResourceForeground",
         "description": "deleted",
         "defaults": {
           "light": "gitDecoration.deletedResourceForeground",

@@ -16,7 +16,7 @@ import {
 import path from 'path';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
-import type { GitExtension, API, Repository } from './git.d';
+import type { GitExtension, API, Repository, Ref } from './git.d';
 import log from './utils/logger';
 
 type FileState = 'branch-added' | 'branch-changed';
@@ -28,8 +28,8 @@ interface RepoInfo {
 }
 type Direction = 'base..HEAD' | 'HEAD..base';
 const STATE_KEYS = {
-  baseBranch: 'showMergeBase.baseBranch:selected',
-  direction: 'showMergeBase.direction:selected',
+  baseBranch: 'mergeBase.baseBranch:selected',
+  direction: 'mergeBase.direction:selected',
 } as const;
 
 export async function activate(extensionContext: ExtensionContext) {
@@ -88,20 +88,21 @@ export async function activate(extensionContext: ExtensionContext) {
           // TODO: handle repository.ui.onDidChange
           // TODO: handle config changes
           // extensionContext.subscriptions.push(VSCodeWorkspace.onDidChangeConfiguration(async (event) => {
-          //   if (event.affectsConfiguration('showMergeBase')) {
+          //   if (event.affectsConfiguration('mergeBase')) {
           //     await decorate(repository);
           //     onDidChange.fire(VSCodeWorkspace.workspaceFolders?.map((workspaceFolder) => workspaceFolder.uri) ?? [])
           //   }
           // }));
           // Register commands
-          // problem here is they can have multiple repos, so your entire state needs to change
-          // See: https://chatgpt.com/c/691123fe-cd58-832f-b926-d9b5a7184990
-          // extensionContext.subscriptions.push(
-          //   VSCodeCommands.registerCommand('showMergeBase.changeBaseBranch', () => changeBaseBranch(extensionContext)),
-          //   VSCodeCommands.registerCommand('showMergeBase.showOppositeMergeDirection', () =>
-          //     showOppositeMergeDirection(extensionContext)
-          //   )
-          // );
+          extensionContext.subscriptions.push(
+            VSCodeCommands.registerCommand('mergeBase.changeBaseBranch', async (uri?: Uri) => {
+              await changeBaseBranch(extensionContext, gitAPI, uri);
+              decorate(repository);
+            })
+            // VSCodeCommands.registerCommand('mergeBase.showOppositeMergeDirection', (uri?: Uri) =>
+            //   showOppositeMergeDirection(extensionContext, gitAPI, uri)
+            // )
+          );
         }
         function handleRepositoryClosed(repository: Repository) {
           const disposable = repositoryStateChanges.get(repository);
@@ -132,7 +133,7 @@ export async function activate(extensionContext: ExtensionContext) {
   }
   // TODO: Debounce by repository
   async function decorate(repository: Repository) {
-    const config = VSCodeWorkspace.getConfiguration('showMergeBase');
+    const config = VSCodeWorkspace.getConfiguration('mergeBase');
     const mergeBaseConfig = config.get<string>('mergeBase', '');
     const includeUntracked = config.get<boolean>('includeUntracked', true);
 
@@ -161,37 +162,67 @@ export async function activate(extensionContext: ExtensionContext) {
   extensionContext.subscriptions.push(VSCodeWindow.registerFileDecorationProvider(provider), onDidChange);
 }
 
-// async function changeBaseBranch(extensionContext: ExtensionContext) {
-// const repositoryName = path.basename(repository.rootUri.fsPath);
-//   const repoRoot = await findRepoRoot();
-//   if (!repoRoot) {
-//     VSCodeWindow.showWarningMessage('No Git repository found in the current workspace.');
-//     return;
-//   }
+async function changeBaseBranch(extensionContext: ExtensionContext, gitAPI: API, uri?: Uri) {
+  const repository = await repositoryForContext(gitAPI, uri);
+  if (!repository) {
+    VSCodeWindow.showWarningMessage('No Git repository found in the current workspace.');
+    return;
+  }
+  const branchRefs = await repository.getBranches({ remote: false });
+  const quickItems = branchRefs
+    .filter((ref: Ref) => ref.name)
+    .map((ref: Ref) => ({
+      label: ref.name as string,
+    }));
+  const picked = await VSCodeWindow.showQuickPick(quickItems, {
+    title: 'Choose base branch',
+    matchOnDescription: true,
+  });
 
-//   const branches = await listBranches(repoRoot);
-//   const quickItems = branches.map((label: string) => ({
-//     label,
-//     description: label.startsWith('remotes/') ? 'remote' : 'local',
-//   }));
-
-//   const picked = await VSCodeWindow.showQuickPick(quickItems, {
-//     title: 'Select base branch (merge base reference)',
-//     matchOnDescription: true,
-//   });
-
-//   if (picked) {
-//     await VSCodeWorkspace.getConfiguration().update(
-//       'colorBranchChanges.baseBranch',
-//       '', // clear config setting so “selected” wins; or keep both (your choice)
-//       ConfigurationTarget.Workspace
-//     );
-//     await extensionContext.workspaceState.update(STATE_KEYS.baseBranch, picked.label);
-//     VSCodeWindow.setStatusBarMessage(`Base branch set to ${picked.label}`, 2500);
-//     // trigger your refresh here if you have one:
-//     // await refreshDecorations();
-//   }
-// }
+  if (picked) {
+    // TODO: Save to settings.json
+    await VSCodeWorkspace.getConfiguration().update('mergeBase.baseBranch', '', ConfigurationTarget.Workspace);
+    await extensionContext.workspaceState.update(STATE_KEYS.baseBranch, picked.label);
+    VSCodeWindow.setStatusBarMessage(`Base branch set to ${picked.label}`, 2500);
+  }
+}
+async function repositoryForContext(gitAPI: API, uri?: Uri): Promise<Repository | undefined> {
+  if (uri) {
+    const repository = gitAPI.getRepository(uri);
+    if (repository) {
+      return repository;
+    }
+  }
+  const activeDocumentUri = VSCodeWindow.activeTextEditor?.document?.uri;
+  if (activeDocumentUri) {
+    const repository = gitAPI.getRepository(activeDocumentUri);
+    if (repository) {
+      return repository;
+    }
+  }
+  const activeTextEditorDocumentUri = VSCodeWindow.activeTextEditor?.document?.uri;
+  if (activeTextEditorDocumentUri) {
+    const repository = gitAPI.getRepository(activeTextEditorDocumentUri);
+    if (repository) {
+      return repository;
+    }
+  }
+  if (gitAPI.repositories.length === 1) {
+    return gitAPI.repositories[0];
+  }
+  if (gitAPI.repositories.length > 1) {
+    const fsPathRepositoryMapping = new Map<string, Repository>();
+    for (const repository of gitAPI.repositories) {
+      fsPathRepositoryMapping.set(repository.rootUri.fsPath, repository);
+    }
+    const pickedRepositoryFsPath = await VSCodeWindow.showQuickPick(Array.from(fsPathRepositoryMapping.keys()), {
+      title: 'Choose repository',
+    });
+    if (pickedRepositoryFsPath) {
+      return fsPathRepositoryMapping.get(pickedRepositoryFsPath);
+    }
+  }
+}
 
 // function showOppositeMergeDirection(extensionContext: ExtensionContext) {}
 
@@ -233,14 +264,10 @@ function decorationForKind(state: FileState): FileDecoration {
       return new FileDecoration(
         'M^', // TODO: see if this can be muted
         'Changed on current branch',
-        new ThemeColor('showMergeBase.changedResourceForeground')
+        new ThemeColor('mergeBase.changedResourceForeground')
       );
     case 'branch-added':
-      return new FileDecoration(
-        'A^',
-        'Added on current branch',
-        new ThemeColor('showMergeBase.addedResourceForeground')
-      );
+      return new FileDecoration('A^', 'Added on current branch', new ThemeColor('mergeBase.addedResourceForeground'));
   }
 }
 
