@@ -4,6 +4,8 @@ import {
   window as VSCodeWindow,
   extensions as VSCodeExtensions,
   workspace as VSCodeWorkspace,
+  commands as VSCodeCommands,
+  ConfigurationTarget,
   EventEmitter,
   FileDecorationProvider,
   FileType,
@@ -24,6 +26,11 @@ interface RepoInfo {
   changedFiles: Map<string, FileState>;
   changedDirectories: Map<string, DirectoryState>;
 }
+type Direction = 'base..HEAD' | 'HEAD..base';
+const STATE_KEYS = {
+  baseBranch: 'showMergeBase.baseBranch:selected',
+  direction: 'showMergeBase.direction:selected',
+} as const;
 
 export async function activate(extensionContext: ExtensionContext) {
   log(extensionContext);
@@ -86,12 +93,14 @@ export async function activate(extensionContext: ExtensionContext) {
           //     onDidChange.fire(VSCodeWorkspace.workspaceFolders?.map((workspaceFolder) => workspaceFolder.uri) ?? [])
           //   }
           // }));
-          // TODO: Register commands
+          // Register commands
+          // problem here is they can have multiple repos, so your entire state needs to change
+          // See: https://chatgpt.com/c/691123fe-cd58-832f-b926-d9b5a7184990
           // extensionContext.subscriptions.push(
-          //   VSCodeCommands.registerCommand('showMergeBase.refresh', async () => {
-          //     decorate(repository);
-          //     onDidChange.fire(VSCodeWorkspace.workspaceFolders?.map((f) => f.uri) ?? []);
-          //   })
+          //   VSCodeCommands.registerCommand('showMergeBase.changeBaseBranch', () => changeBaseBranch(extensionContext)),
+          //   VSCodeCommands.registerCommand('showMergeBase.showOppositeMergeDirection', () =>
+          //     showOppositeMergeDirection(extensionContext)
+          //   )
           // );
         }
         function handleRepositoryClosed(repository: Repository) {
@@ -152,6 +161,40 @@ export async function activate(extensionContext: ExtensionContext) {
   extensionContext.subscriptions.push(VSCodeWindow.registerFileDecorationProvider(provider), onDidChange);
 }
 
+// async function changeBaseBranch(extensionContext: ExtensionContext) {
+// const repositoryName = path.basename(repository.rootUri.fsPath);
+//   const repoRoot = await findRepoRoot();
+//   if (!repoRoot) {
+//     VSCodeWindow.showWarningMessage('No Git repository found in the current workspace.');
+//     return;
+//   }
+
+//   const branches = await listBranches(repoRoot);
+//   const quickItems = branches.map((label: string) => ({
+//     label,
+//     description: label.startsWith('remotes/') ? 'remote' : 'local',
+//   }));
+
+//   const picked = await VSCodeWindow.showQuickPick(quickItems, {
+//     title: 'Select base branch (merge base reference)',
+//     matchOnDescription: true,
+//   });
+
+//   if (picked) {
+//     await VSCodeWorkspace.getConfiguration().update(
+//       'colorBranchChanges.baseBranch',
+//       '', // clear config setting so “selected” wins; or keep both (your choice)
+//       ConfigurationTarget.Workspace
+//     );
+//     await extensionContext.workspaceState.update(STATE_KEYS.baseBranch, picked.label);
+//     VSCodeWindow.setStatusBarMessage(`Base branch set to ${picked.label}`, 2500);
+//     // trigger your refresh here if you have one:
+//     // await refreshDecorations();
+//   }
+// }
+
+// function showOppositeMergeDirection(extensionContext: ExtensionContext) {}
+
 function getChangedDirectories<T extends Map<string, FileState>>(
   changedFiles: T,
   repoPath: string
@@ -188,7 +231,7 @@ function decorationForKind(state: FileState): FileDecoration {
   switch (state) {
     case 'branch-changed':
       return new FileDecoration(
-        'M^',
+        'M^', // TODO: see if this can be muted
         'Changed on current branch',
         new ThemeColor('showMergeBase.changedResourceForeground')
       );
