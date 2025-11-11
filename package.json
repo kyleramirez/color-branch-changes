@@ -1,11 +1,11 @@
 {
-  "name": "color-branch-changes",
-  "displayName": "Color Branch Changes",
+  "name": "merge-base",
+  "displayName": "VS Code Merge Base",
   "publisher": "KyleRamirez",
+  "repository": "https://github.com/kyleramirez/vscode-merge-base",
   "version": "0.0.0",
-  "license": "CC0-1.0",
   "engines": {
-    "vscode": "^1.99.3"
+    "vscode": "^1.98.0"
   },
   "activationEvents": [
     "onStartupFinished"
@@ -13,39 +13,72 @@
   "main": "./out/extension.js",
   "contributes": {
     "configuration": {
-      "title": "Color Branch Changes",
+      "title": "Merge Base",
       "properties": {
-        "colorBranchChanges.baseBranch": {
+        "mergeBase.baseBranch": {
           "type": "string",
           "default": "",
-          "description": "Base / parent branch to compare against. Leave empty to auto-detect the upstream branch."
-        },
-        "colorBranchChanges.includeUntracked": {
-          "type": "boolean",
-          "default": true,
-          "description": "Highlight untracked files too."
+          "markdownDescription": "Optionally set the base or parent branch for comparison (defaults to parent branch)"
         }
       }
     },
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "mergeBase.changeBaseBranch",
+          "group": "navigation"
+        },
+        {
+          "command": "mergeBase.showOppositeMergeDirection",
+          "group": "navigation"
+        }
+      ],
+      "scm/title": [
+        {
+          "command": "mergeBase.changeBaseBranch",
+          "when": "scmProvider == git"
+        },
+        {
+          "command": "mergeBase.showOppositeMergeDirection",
+          "when": "scmProvider == git"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "mergeBase.changeBaseBranch"
+        },
+        {
+          "command": "mergeBase.showOppositeMergeDirection"
+        }
+      ]
+    },
     "commands": [
       {
-        "command": "colorBranchChanges.refresh",
-        "title": "Color Branch Changes: Refresh"
+        "command": "mergeBase.changeBaseBranch",
+        "title": "Merge Base: choose base branch"
+      },
+      {
+        "command": "mergeBase.showOppositeMergeDirection",
+        "title": "Merge Base: switch merge direction"
+      },
+      {
+        "command": "mergeBase.toggle",
+        "title": "Merge Base: toggle show"
       }
     ],
     "colors": [
       {
-        "id": "colorBranchChanges.modifiedResourceForeground",
-        "description": "Current branch modified file",
+        "id": "mergeBase.changedResourceForeground",
+        "description": "changed",
         "defaults": {
-          "light": "gitDecoration.modifiedResourceForeground",
-          "dark": "gitDecoration.modifiedResourceForeground",
-          "highContrast": "gitDecoration.modifiedResourceForeground"
+          "light": "gitDecoration.changedResourceForeground",
+          "dark": "gitDecoration.changedResourceForeground",
+          "highContrast": "gitDecoration.changedResourceForeground"
         }
       },
       {
-        "id": "colorBranchChanges.addedResourceForeground",
-        "description": "Current branch added file",
+        "id": "mergeBase.addedResourceForeground",
+        "description": "added",
         "defaults": {
           "light": "gitDecoration.untrackedResourceForeground",
           "dark": "gitDecoration.untrackedResourceForeground",
@@ -53,12 +86,12 @@
         }
       },
       {
-        "id": "colorBranchChanges.unknownForeground",
-        "description": "Unknown file state",
+        "id": "mergeBase.deletedResourceForeground",
+        "description": "deleted",
         "defaults": {
-          "light": "gitDecoration.conflictingResourceForeground",
-          "dark": "gitDecoration.conflictingResourceForeground",
-          "highContrast": "gitDecoration.conflictingResourceForeground"
+          "light": "gitDecoration.deletedResourceForeground",
+          "dark": "gitDecoration.deletedResourceForeground",
+          "highContrast": "gitDecoration.deletedResourceForeground"
         }
       }
     ]
@@ -69,7 +102,9 @@
   "scripts": {
     "vscode:prepublish": "pnpm compile",
     "compile": "tsc -p .",
-    "start": "pnpm compile -w",
+    "watch": "pnpm compile -w",
+    "host:code": "node --trace-warnings ./scripts/host.js code",
+    "host:cursor": "node --trace-warnings ./scripts/host.js cursor",
     "package": "vsce package"
   },
   "devDependencies": {
